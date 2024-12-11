@@ -9,13 +9,16 @@ import Octicons from '@expo/vector-icons/Octicons'
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
 import Animated, { LinearTransition } from 'react-native-reanimated'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
 export default function Index() {
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState('')
   const { colorScheme, setColorScheme, theme } = useContext(ThemeContext)
+  const router = useRouter();
+
+
   const [loaded, error] = useState({
     Inter_500Medium, 
   })
@@ -75,15 +78,24 @@ export default function Index() {
     setTodos(todos.filter(todo => todo.id !== id))
   }
 
+  const handlePress = (id) => {
+    router.push(`/todos/${id}`)
+  }
+
+
   const renderItem =({ item }) => (
     <View style={styles.todoItem}>
 
-      <Text
-        style={[styles.todoText, item.completed && styles.completedText]}
-        onPress={() => toggleTodo(item.id)}
+      <Pressable 
+        onPress={() => handlePress(item.id)}
+        onLongPress={() => toggleTodo(item.id)}
       >
-        {item.title}
-      </Text>
+        <Text
+          style={[styles.todoText, item.completed && styles.completedText]}
+        >
+          {item.title}
+        </Text>
+      </Pressable>
 
       <Pressable onPress={() => removeTodo(item.id)}>
         <MaterialIcons name="delete" size={36} color={theme.icon} selectable={undefined}/>
@@ -96,6 +108,7 @@ export default function Index() {
       <View style={styles.inputContainer}>
         <TextInput 
           style={styles.input}
+          maxLength={30}
           placeholder="Add a new todo"
           placeholderTextColor="gray"
           value={text}
@@ -106,10 +119,7 @@ export default function Index() {
         </Pressable>
 
         <Pressable onPress={() => setColorScheme(colorScheme === 'light' ? 'dark' : 'light')} style={{ marginLeft: 10}}>
-          {colorScheme === 'dark' ? 
-          <Octicons name="moon" size={36} color={theme.text} selectable={undefined} style={{width: 36}}/> :
-          <Octicons name="sun" size={36} color={theme.text} selectable={undefined} style={{width: 36}}/>
-          }
+          <Octicons name={colorScheme === 'dark' ? "moon" : "sun"} size={36} color={theme.text} selectable={undefined} style={{width: 36}}/> 
         </Pressable>
       </View>
 
@@ -184,7 +194,8 @@ function createStyles(theme, colorScheme) {
       flex: 1,
       fontSize: 18,
       color: theme.text,
-      fontFamily: 'Inter_500Medium'
+      fontFamily: 'Inter_500Medium',
+      textAlignVertical: 'center',
     },
     completedText: {
       textDecorationLine: 'line-through',

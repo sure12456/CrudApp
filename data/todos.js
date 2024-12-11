@@ -96,7 +96,7 @@ export const data = [
     },
     {
         "id": 20,
-        "title": "Set up the new computer",
+        "title": "Set up the new Laptop",
         "completed": false
     }
 ]
